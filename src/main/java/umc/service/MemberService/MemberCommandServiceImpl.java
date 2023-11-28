@@ -29,7 +29,6 @@ public class MemberCommandServiceImpl implements MemberCommandService{
     @Override
     @Transactional
     public Member joinMember(MemberRequestDTO.JoinDto request) {
-
         Member newMember = MemberConverter.toMember(request);
         List<FoodCategory> foodCategoryList = request.getPreferCategory().stream()
                 .map(category -> {
@@ -41,10 +40,5 @@ public class MemberCommandServiceImpl implements MemberCommandService{
         memberPreferList.forEach(memberPrefer -> {memberPrefer.setMember(newMember);});
 
         return memberRepository.save(newMember);
-    }
-
-    @Override
-    public boolean existsById(Long id) {
-        return foodCategoryRepository.existsById(id);
     }
 }

@@ -13,7 +13,7 @@ import umc.web.dto.StoreRequestDTO;
 @Service
 @Transactional
 @RequiredArgsConstructor
-public class StoreCommandServiceImpl implements StoreCommandService {
+public class ReviewCommandServiceImpl implements ReviewCommandService {
 
     private final ReviewRepository reviewRepository;
     private final MemberRepository memberRepository;

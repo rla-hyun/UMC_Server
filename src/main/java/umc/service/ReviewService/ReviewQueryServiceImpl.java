@@ -12,7 +12,7 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
-public class StoreQueryServiceImpl implements StoreQueryService {
+public class ReviewQueryServiceImpl implements ReviewQueryService {
 
     private final StoreRepository storeRepository;
 

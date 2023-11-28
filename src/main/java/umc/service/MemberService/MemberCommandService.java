@@ -7,5 +7,4 @@ public interface MemberCommandService {
 
     Member joinMember(MemberRequestDTO.JoinDto request);
 
-    boolean existsById(Long id);
 }

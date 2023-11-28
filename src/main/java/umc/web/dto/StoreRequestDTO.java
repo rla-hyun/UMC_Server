@@ -16,4 +16,12 @@ public class StoreRequestDTO {
         @NotBlank
         String body;
     }
+
+    @Getter
+    public static class StoreDTO {
+        @NotBlank
+        String name;
+        @NotBlank
+        String address;
+    }
 }

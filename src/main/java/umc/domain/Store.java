@@ -1,6 +1,7 @@
 package umc.domain;
 
 import lombok.*;
+import org.hibernate.annotations.ColumnDefault;
 import umc.domain.base.BaseEntity;
 
 import javax.persistence.*;
@@ -28,6 +29,7 @@ public class Store extends BaseEntity {
     @Column(nullable = false, length = 50)
     private String address;
 
+    @ColumnDefault("0")
     private Float score;
 
     @OneToMany(mappedBy = "store", cascade = CascadeType.ALL)
@@ -35,5 +37,12 @@ public class Store extends BaseEntity {
 
     @OneToMany(mappedBy = "store", cascade = CascadeType.ALL)
     private List<Review> reviewList = new ArrayList<>();
+
+    public void setRegion(Region region) {
+        if(this.region != null)
+            region.getStoreList().remove(this);
+        this.region = region;
+        region.getStoreList().add(this);
+    }
 
 }
