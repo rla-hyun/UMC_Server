@@ -20,7 +20,6 @@ public class StoreCommandServiceImpl implements StoreCommandService{
 
     @Override
     public Store AddStore(Long regionId, StoreRequestDTO.StoreDTO request) {
-        System.out.println("AddStore");
         Store store = StoreConverter.toStore(request);
 
         store.setRegion(regionRepository.findById(regionId).get());
