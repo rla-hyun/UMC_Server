@@ -1,6 +1,8 @@
 package umc.domain.mapping;
 
 import lombok.*;
+import org.hibernate.annotations.DynamicInsert;
+import org.hibernate.annotations.DynamicUpdate;
 import umc.domain.Member;
 import umc.domain.Mission;
 import umc.domain.base.BaseEntity;
@@ -13,6 +15,8 @@ import javax.persistence.*;
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
+@DynamicUpdate
+@DynamicInsert
 public class MemberMission extends BaseEntity {
 
     @Id
@@ -30,5 +34,19 @@ public class MemberMission extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "mission_id")
     private Mission mission;
+
+    public void setMember(Member member) {
+        if(this.member != null)
+            member.getMemberMissionList().remove(this);
+        this.member = member;
+        member.getMemberMissionList().add(this);
+    }
+
+    public void setMission(Mission mission) {
+        if(this.mission != null)
+            mission.getMemberMissionList().remove(this);
+        this.mission = mission;
+        mission.getMemberMissionList().add(this);
+    }
 
 }

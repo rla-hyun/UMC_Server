@@ -1,14 +1,17 @@
 package umc.web.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
 import umc.apiPayload.ApiResponse;
 import umc.converter.MemberConverter;
+import umc.converter.MemberMissionConverter;
 import umc.domain.Member;
+import umc.domain.mapping.MemberMission;
 import umc.service.MemberService.MemberCommandService;
+import umc.validation.annotation.ExistMember;
+import umc.validation.annotation.ExistMission;
+import umc.web.dto.MemberMissionResponseDTO;
 import umc.web.dto.MemberRequestDTO;
 import umc.web.dto.MemberResponseDTO;
 
@@ -16,6 +19,7 @@ import javax.validation.Valid;
 
 @RestController
 @RequiredArgsConstructor
+@Validated
 @RequestMapping("/members")
 public class MemberRestController {
 
@@ -25,5 +29,12 @@ public class MemberRestController {
     public ApiResponse<MemberResponseDTO.JoinResultDTO> join(@RequestBody @Valid MemberRequestDTO.JoinDto request){
         Member member = memberCommandService.joinMember(request);
         return ApiResponse.onSuccess(MemberConverter.toJoinResultDTO(member));
+    }
+
+    @PostMapping("/{missionId}")
+    public ApiResponse<MemberMissionResponseDTO.MemberMissionResultDTO> memberMission(@ExistMission @PathVariable(name = "missionId") Long missionId,
+                                             @ExistMember @RequestParam(name = "memberId") Long memberId) {
+        MemberMission memberMIssion = memberCommandService.AddMission(memberId, missionId);
+        return ApiResponse.onSuccess(MemberMissionConverter.toChallengeMission(memberMIssion));
     }
 }
