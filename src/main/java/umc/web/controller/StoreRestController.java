@@ -1,6 +1,7 @@
 package umc.web.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import umc.apiPayload.ApiResponse;
 import umc.converter.StoreConverter;
@@ -17,6 +18,7 @@ import umc.web.dto.StoreResponseDTO;
 import javax.validation.Valid;
 
 @RestController
+@Validated
 @RequiredArgsConstructor
 @RequestMapping("/store")
 public class StoreRestController {
