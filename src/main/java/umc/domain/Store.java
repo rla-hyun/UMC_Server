@@ -2,6 +2,8 @@ package umc.domain;
 
 import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.DynamicInsert;
+import org.hibernate.annotations.DynamicUpdate;
 import umc.domain.base.BaseEntity;
 
 import javax.persistence.*;
@@ -13,6 +15,8 @@ import java.util.List;
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
+@DynamicUpdate
+@DynamicInsert
 public class Store extends BaseEntity {
 
     @Id

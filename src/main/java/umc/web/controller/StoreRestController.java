@@ -32,7 +32,7 @@ public class StoreRestController {
     private final StoreCommandService storeCommandService;
     private final MissionCommandService missionCommandService;
 
-    @PostMapping("/review/{storeId}")
+    @PostMapping("/{storeId}/review")
     public ApiResponse<StoreResponseDTO.ReviewResultDTO> review(@RequestBody @Valid StoreRequestDTO.ReviewDTO request,
                                                                 @ExistStore @PathVariable(name = "storeId") Long storeId,
                                                                 @ExistMember @RequestParam(name = "memberId") Long memberId){
