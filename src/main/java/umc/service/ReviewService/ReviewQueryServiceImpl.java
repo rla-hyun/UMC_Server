@@ -14,10 +14,4 @@ import java.util.Optional;
 @Transactional(readOnly = true)
 public class ReviewQueryServiceImpl implements ReviewQueryService {
 
-    private final StoreRepository storeRepository;
-
-    @Override
-    public Optional<Store> findStore(Long id) {
-        return storeRepository.findById(id);
-    }
 }

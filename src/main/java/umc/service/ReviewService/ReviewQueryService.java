@@ -6,5 +6,4 @@ import java.util.Optional;
 
 public interface ReviewQueryService {
 
-    Optional<Store> findStore(Long id);
 }
