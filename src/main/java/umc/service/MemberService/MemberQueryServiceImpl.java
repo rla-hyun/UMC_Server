@@ -1,13 +1,20 @@
 package umc.service.MemberService;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import umc.domain.Member;
-import umc.repository.FoodCategoryRepository;
-import umc.repository.MemberRepository;
+import umc.domain.Mission;
+import umc.domain.Review;
+import umc.domain.mapping.MemberMission;
+import umc.repository.*;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -17,6 +24,7 @@ public class MemberQueryServiceImpl implements MemberQueryService{
 
     private final MemberRepository memberRepository;
     private final FoodCategoryRepository foodCategoryRepository;
+    private final MemberMissionRepository memberMissionRepository;
 
     @Override
     public Optional<Member> findMember(Long id) {
@@ -27,4 +35,17 @@ public class MemberQueryServiceImpl implements MemberQueryService{
     public boolean existsById(Long id) {
         return foodCategoryRepository.existsById(id);
     }
+
+    @Override
+    public Page<Mission> getMissionList(Long memberId, Integer page) {
+        List<MemberMission> memberMissionList = memberMissionRepository.findAllByMemberId(memberId);
+        List<Mission> filterMissionList = memberMissionList.stream()
+                .map(mission -> mission.getMission())
+                .collect(Collectors.toList());
+
+        Page<Mission> missionList = new PageImpl<>(filterMissionList, PageRequest.of(page, 10), filterMissionList.size());
+        return missionList;
+    }
+
+
 }
