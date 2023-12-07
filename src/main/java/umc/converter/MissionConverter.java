@@ -22,4 +22,13 @@ public class MissionConverter {
                 .createdAt(LocalDateTime.now())
                 .build();
     }
+
+    public static MissionResponseDTO.missionCompleteDTO toCompleteMission(Mission mission) {
+        return MissionResponseDTO.missionCompleteDTO.builder()
+                .storeName(mission.getStore().getName())
+                .reward(mission.getReward())
+                .deadline(mission.getDeadline())
+                .missionSpec(mission.getMissionSpec())
+                .build();
+    }
 }
