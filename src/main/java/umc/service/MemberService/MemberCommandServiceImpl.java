@@ -30,11 +30,8 @@ import java.util.stream.Collectors;
 public class MemberCommandServiceImpl implements MemberCommandService{
 
     private final MemberRepository memberRepository;
-
     private final FoodCategoryRepository foodCategoryRepository;
-
     private final MissionRepository missionRepository;
-
     private final MemberMissionRepository memberMissionRepository;
 
     @Override
@@ -68,5 +65,17 @@ public class MemberCommandServiceImpl implements MemberCommandService{
         memberMission.setMission(mission);
 
         return memberMissionRepository.save(memberMission);
+    }
+
+    @Override
+    @Transactional
+    public Mission ChangeMission(Long missionId, Long memberId) {
+        Member member = memberRepository.findById(memberId).get();
+        Mission mission = missionRepository.findById(missionId).get();
+        MemberMission memberMission = memberMissionRepository.findByMemberAndMission(member, mission);
+        memberMission.setStatus();
+        memberMissionRepository.save(memberMission);
+
+        return mission;
     }
 }

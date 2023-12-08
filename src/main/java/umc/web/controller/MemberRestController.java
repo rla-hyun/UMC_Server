@@ -13,8 +13,10 @@ import org.springframework.web.bind.annotation.*;
 import umc.apiPayload.ApiResponse;
 import umc.converter.MemberConverter;
 import umc.converter.MemberMissionConverter;
+import umc.converter.MissionConverter;
 import umc.domain.Member;
 import umc.domain.Review;
+import umc.domain.Mission;
 import umc.domain.mapping.MemberMission;
 import umc.service.MemberService.MemberCommandService;
 import umc.service.MemberService.MemberQueryService;
@@ -24,6 +26,7 @@ import umc.validation.annotation.ExistMission;
 import umc.web.dto.MemberMissionResponseDTO;
 import umc.web.dto.MemberRequestDTO;
 import umc.web.dto.MemberResponseDTO;
+import umc.web.dto.MissionResponseDTO;
 
 import javax.validation.Valid;
 
@@ -44,7 +47,7 @@ public class MemberRestController {
 
     @PostMapping("/{missionId}")
     public ApiResponse<MemberMissionResponseDTO.MemberMissionResultDTO> memberMission(@ExistMission @PathVariable(name = "missionId") Long missionId,
-                                             @ExistMember @RequestParam(name = "memberId") Long memberId) {
+                                                                                      @ExistMember @RequestParam(name = "memberId") Long memberId) {
         MemberMission memberMIssion = memberCommandService.AddMission(memberId, missionId);
         return ApiResponse.onSuccess(MemberMissionConverter.toChallengeMission(memberMIssion));
     }
@@ -63,8 +66,14 @@ public class MemberRestController {
     })
     public ApiResponse<MemberResponseDTO.ReviewPreViewListDTO> getReviewList(@ExistMember @RequestParam(name = "memberId") Long memberId,
                                                                              @CheckPage @RequestParam(name = "page") Integer page) {
-        Page<Review> reviewList = memberQueryService.getReviewList(memberId, page-1);
+        Page<Review> reviewList = memberQueryService.getReviewList(memberId, page - 1);
         return ApiResponse.onSuccess(MemberConverter.reviewPreViewListDTO(reviewList));
+    }
 
+    @GetMapping("/{missionId}/complete")
+    public ApiResponse<MissionResponseDTO.missionCompleteDTO> missionComplete(@ExistMission @PathVariable(name = "missionId") Long missionId,
+                                                                              @ExistMember @RequestParam(name = "memberId") Long memberId) {
+        Mission mission = memberCommandService.ChangeMission(missionId, memberId);
+        return ApiResponse.onSuccess(MissionConverter.toCompleteMission(mission));
     }
 }

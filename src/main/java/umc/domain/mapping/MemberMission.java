@@ -49,4 +49,9 @@ public class MemberMission extends BaseEntity {
         mission.getMemberMissionList().add(this);
     }
 
+    public void setStatus() {
+        if(this.status == MissionStatus.CHALLENGING)
+            this.status = MissionStatus.COMPLETE;
+    }
+
 }
