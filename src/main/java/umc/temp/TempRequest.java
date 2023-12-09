@@ -1,4 +1,4 @@
-package umc.web.dto;
+package umc.temp;
 
 public class TempRequest {
 }
