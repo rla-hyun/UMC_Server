@@ -42,6 +42,7 @@ public class StoreRestController {
     private final MissionCommandService missionCommandService;
     private final StoreQueryService storeQueryService;
 
+    // 가게의 리뷰 등록
     @PostMapping("/review/{storeId}")
     public ApiResponse<StoreResponseDTO.ReviewResultDTO> review(@RequestBody @Valid StoreRequestDTO.ReviewDTO request,
                                                                 @ExistStore @PathVariable(name = "storeId") Long storeId,
@@ -50,6 +51,8 @@ public class StoreRestController {
         return ApiResponse.onSuccess(StoreConverter.toCreateReviewDTO(review));
     }
 
+
+    // 가게 추가
     @PostMapping("/{regionId}")
     public ApiResponse<StoreResponseDTO.StoreResultDTO> store(@RequestBody @Valid StoreRequestDTO.StoreDTO request,
                                                               @ExistRegion @PathVariable(name = "regionId") Long regionId) {
@@ -57,14 +60,15 @@ public class StoreRestController {
         return ApiResponse.onSuccess(StoreConverter.toAddStore(store));
     }
 
-    @PostMapping("/{storeId}/mission")
+    // 가게의 미션 조회
+    @PostMapping("/{storeId}/missions")
     public ApiResponse<MissionResponseDTO.missionResultDTO> mission(@RequestBody @Valid MissionRequestDTO.MissionDTO request,
                                                                     @ExistStore @PathVariable(name = "storeId") Long storeId) {
         Mission mission = missionCommandService.createMission(storeId, request);
         return ApiResponse.onSuccess(MissionConverter.toCreateMission(mission));
     }
 
-    @Operation(summary = "특정 가게의 리뷰 목록 조회 API",description = "특정 가게의 리뷰들의 목록을 조회하는 API이며, 페이징을 포함합니다. query String 으로 page 번호를 주세요")
+    @Operation(summary = "가게의 리뷰 목록 조회 API",description = "특정 가게 리뷰들의 목록을 조회하는 API이며, 페이징을 포함합니다. query String 으로 page 번호를 주세요")
     @GetMapping("/{storeId}/reviews")
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "COMMON200",description = "OK, 성공"),
@@ -74,14 +78,14 @@ public class StoreRestController {
     })
     @Parameters({
             @Parameter(name = "storeId", description = "가게의 아이디, path variable 입니다!"),
-            @Parameter(name = "page", description = "페이지 번호, 0번이 1 페이지 입니다."),
+            @Parameter(name = "page", description = "페이지 번호, 1번부터 입력해주세요."),
     })
     public ApiResponse<StoreResponseDTO.ReviewPreViewListDTO> getReviewList(@ExistStore @PathVariable(name = "storeId") Long storeId, @CheckPage @RequestParam(name = "page") Integer page){
         Page<Review> reviewList = storeQueryService.getReviewList(storeId,page-1);
         return ApiResponse.onSuccess(StoreConverter.reviewPreViewListDTO(reviewList));
     }
 
-    @Operation(summary = "특정 가게의 미션 목록 조회 API",description = "특정 가게의 리뷰들의 목록을 조회하는 API이며, 페이징을 포함합니다. query String 으로 page 번호를 주세요")
+    @Operation(summary = "특정 가게의 미션 목록 조회 API",description = "특정 가게의 미션들의 목록을 조회하는 API이며, 페이징을 포함합니다. query String 으로 page 번호를 주세요")
     @GetMapping("/{storeId}/missions")
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "COMMON200",description = "OK, 성공"),
@@ -91,7 +95,7 @@ public class StoreRestController {
     })
     @Parameters({
             @Parameter(name = "storeId", description = "가게의 아이디, path variable 입니다!"),
-            @Parameter(name = "page", description = "페이지 번호, 0번이 1 페이지 입니다."),
+            @Parameter(name = "page", description = "페이지 번호, 1번부터 입력해주세요."),
     })
     public ApiResponse<StoreResponseDTO.MissionPreviewListDTO> getMissionList(@ExistStore @PathVariable(name = "storeId") Long storeId,
                                                                               @CheckPage @RequestParam(name = "page") Integer page) {

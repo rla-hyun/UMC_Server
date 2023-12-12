@@ -21,7 +21,6 @@ import umc.repository.MissionRepository;
 import umc.web.dto.MemberRequestDTO;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -39,9 +38,8 @@ public class MemberCommandServiceImpl implements MemberCommandService{
     public Member joinMember(MemberRequestDTO.JoinDto request) {
         Member newMember = MemberConverter.toMember(request);
         List<FoodCategory> foodCategoryList = request.getPreferCategory().stream()
-                .map(category -> {
-                    return foodCategoryRepository.findById(category).orElseThrow(() -> new FoodCategoryHandler(ErrorStatus.FOOD_CATEGORY_NOT_FOUND));
-                }).collect(Collectors.toList());
+                .map(category -> foodCategoryRepository.findById(category).orElseThrow())
+                .collect(Collectors.toList());
 
         List<MemberPrefer> memberPreferList = MemberPreferConverter.toMemberPreferList(foodCategoryList);
 
@@ -55,10 +53,8 @@ public class MemberCommandServiceImpl implements MemberCommandService{
     public MemberMission AddMission(Long memberId, Long missionId) {
         Member member = memberRepository.findById(memberId).get();
         Mission mission = missionRepository.findById(missionId).get();
-        MemberMission existMission = memberMissionRepository.findByMemberAndMission(member, mission);
-        if(existMission != null) {
-            throw new MemberMissionHandler(ErrorStatus.MISSION_CONFLICT);
-        }
+        existMemberMission(member, mission, true);
+
         MemberMission memberMission = MemberMissionConverter.toMemberMission();
 
         memberMission.setMember(member);
@@ -72,10 +68,22 @@ public class MemberCommandServiceImpl implements MemberCommandService{
     public Mission ChangeMission(Long missionId, Long memberId) {
         Member member = memberRepository.findById(memberId).get();
         Mission mission = missionRepository.findById(missionId).get();
+        existMemberMission(member, mission, false);
+
         MemberMission memberMission = memberMissionRepository.findByMemberAndMission(member, mission);
         memberMission.setStatus();
         memberMissionRepository.save(memberMission);
 
         return mission;
+    }
+
+    private void existMemberMission(Member member, Mission mission, boolean status) {
+        boolean exist = memberMissionRepository.existsByMemberAndMission(member, mission);
+        if(status && exist) { // 이미 추가한 미션인 경우
+            throw new MemberMissionHandler(ErrorStatus.MISSION_CONFLICT);
+        }
+        if(!status && !exist) { // 등록되지 않은 미션인 경우
+            throw new MemberMissionHandler(ErrorStatus.MISSION_NOT_REGISTERED);
+        }
     }
 }

@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import umc.domain.Member;
 import umc.domain.Review;
+import umc.domain.enums.MissionStatus;
 import umc.repository.FoodCategoryRepository;
 import umc.repository.MemberRepository;
 import umc.repository.ReviewRepository;
@@ -29,6 +30,7 @@ public class MemberQueryServiceImpl implements MemberQueryService{
     private final FoodCategoryRepository foodCategoryRepository;
     private final ReviewRepository reviewRepository;
     private final MemberMissionRepository memberMissionRepository;
+    private final MissionRepository missionRepository;
 
     @Override
     public Optional<Member> findMember(Long id) {
@@ -47,13 +49,20 @@ public class MemberQueryServiceImpl implements MemberQueryService{
         Page<Review> MemberPage = reviewRepository.findAllByMember(member, PageRequest.of(page, 10));
         return MemberPage;
     }
-    public Page<Mission> getMissionList(Long memberId, Integer page) {
+
+    public Page<Mission> getMissionList(Long memberId, Integer page, Integer status) {
         List<MemberMission> memberMissionList = memberMissionRepository.findAllByMemberId(memberId);
+
         List<Mission> filterMissionList = memberMissionList.stream()
-                .map(mission -> mission.getMission())
+                .filter(mm -> filterMission(mm.getStatus(), status))
+                .map(MemberMission::getMission)
                 .collect(Collectors.toList());
 
-        Page<Mission> missionList = new PageImpl<>(filterMissionList, PageRequest.of(page, 10), filterMissionList.size());
-        return missionList;
+        return new PageImpl<>(filterMissionList, PageRequest.of(page, 10), filterMissionList.size());
+    }
+
+    private boolean filterMission(MissionStatus missionStatus, int status) {
+        return (status == 1 && missionStatus == MissionStatus.CHALLENGING) ||
+                (status == 2 && missionStatus == MissionStatus.COMPLETE);
     }
 }

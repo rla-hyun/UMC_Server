@@ -16,5 +16,5 @@ public interface MemberQueryService {
 
     Page<Review> getReviewList(Long memberId, Integer page);
 
-    Page<Mission> getMissionList(Long memberId, Integer page);
+    Page<Mission> getMissionList(Long memberId, Integer page, Integer status);
 }

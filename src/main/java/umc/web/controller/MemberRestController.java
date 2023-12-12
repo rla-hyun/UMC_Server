@@ -39,21 +39,23 @@ public class MemberRestController {
     private final MemberCommandService memberCommandService;
     private final MemberQueryService memberQueryService;
 
-    @PostMapping("/")
+    // 사용자 가입
+    @PostMapping( "")
     public ApiResponse<MemberResponseDTO.JoinResultDTO> join(@RequestBody @Valid MemberRequestDTO.JoinDto request){
         Member member = memberCommandService.joinMember(request);
         return ApiResponse.onSuccess(MemberConverter.toJoinResultDTO(member));
     }
 
-    @PostMapping("/{missionId}")
+    // 사용자 미션 추가
+    @PostMapping("/{missionId}/{memberId}")
     public ApiResponse<MemberMissionResponseDTO.MemberMissionResultDTO> memberMission(@ExistMission @PathVariable(name = "missionId") Long missionId,
-                                                                                      @ExistMember @RequestParam(name = "memberId") Long memberId) {
+                                                                                      @ExistMember @PathVariable(name = "memberId") Long memberId) {
         MemberMission memberMIssion = memberCommandService.AddMission(memberId, missionId);
         return ApiResponse.onSuccess(MemberMissionConverter.toChallengeMission(memberMIssion));
     }
 
-    @Operation(summary = "작성한 리뷰 목록 조회 API",description = "사용자가 작성한 리뷰들의 목록을 조회하는 API이며, 페이징을 포함합니다. query String 으로 page 번호를 주세요")
-    @GetMapping("/reviews")
+    @Operation(summary = "작성한 리뷰 목록 조회 API",description = "특정 사용자가 작성한 리뷰들의 목록을 조회하는 API이며, 페이징을 포함합니다. query String 으로 page 번호를 주세요")
+    @GetMapping("/{memberId}/reviews")
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "COMMON200",description = "OK, 성공"),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "AUTH003", description = "access 토큰을 주세요!",content = @Content(schema = @Schema(implementation = ApiResponse.class))),
@@ -62,16 +64,16 @@ public class MemberRestController {
     })
     @Parameters({
             @Parameter(name = "memberId", description = "사용자 아이디, query String 입니다!"),
-            @Parameter(name = "page", description = "페이지 번호, 0번이 1 페이지 입니다."),
+            @Parameter(name = "page", description = "페이지 번호, 1번부터 입력해주세요."),
     })
-    public ApiResponse<MemberResponseDTO.ReviewPreViewListDTO> getReviewList(@ExistMember @RequestParam(name = "memberId") Long memberId,
+    public ApiResponse<MemberResponseDTO.ReviewPreViewListDTO> getReviewList(@ExistMember @PathVariable(name = "memberId") Long memberId,
                                                                              @CheckPage @RequestParam(name = "page") Integer page) {
         Page<Review> reviewList = memberQueryService.getReviewList(memberId, page - 1);
         return ApiResponse.onSuccess(MemberConverter.reviewPreViewListDTO(reviewList));
     }
 
-    @Operation(summary = "특정 사용자의 진행 중인 미션 조회 API",description = "특정 사용자의 진행 중인 미션들을 조회하는 API이며, 페이징을 포함합니다. query String 으로 page 번호를 주세요")
-    @GetMapping("/missions")
+    @Operation(summary = "진행 중인 미션 조회 API",description = "특정 사용자의 진행 중인 미션들을 조회하는 API이며, 페이징을 포함합니다. query String 으로 page 번호를 주세요")
+    @GetMapping("/{memberId}/missions/challenging")
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "COMMON200",description = "OK, 성공"),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "AUTH003", description = "access 토큰을 주세요!",content = @Content(schema = @Schema(implementation = ApiResponse.class))),
@@ -80,18 +82,31 @@ public class MemberRestController {
     })
     @Parameters({
             @Parameter(name = "memberId", description = "사용자의 아이디, query String 입니다!"),
-            @Parameter(name = "page", description = "페이지 번호, 0번이 1 페이지 입니다."),
+            @Parameter(name = "page", description = "페이지 번호, 1번부터 입력해주세요."),
     })
-    public ApiResponse<MemberMissionResponseDTO.MissionPreviewListDTO> getMissionList(@ExistMember @RequestParam(name = "memberId") Long memberId,
+    public ApiResponse<MemberMissionResponseDTO.MissionPreviewListDTO> getMissionList(@ExistMember @PathVariable(name = "memberId") Long memberId,
                                                                                       @CheckPage @RequestParam(name = "page") Integer page) {
-        Page<Mission> missionList = memberQueryService.getMissionList(memberId, page-1);
+        Page<Mission> missionList = memberQueryService.getMissionList(memberId, page-1, 1);
         return ApiResponse.onSuccess(MemberMissionConverter.missionPreviewListDTO(missionList));
     }
 
-    @GetMapping("/{missionId}/complete")
-    public ApiResponse<MissionResponseDTO.missionCompleteDTO> missionComplete(@ExistMission @PathVariable(name = "missionId") Long missionId,
-                                                                              @ExistMember @RequestParam(name = "memberId") Long memberId) {
+    @Operation(summary = "진행 완료된 미션 조회 API",description = "특정 사용자의 진행 완료된 미션들을 조회하는 API이며, 페이징을 포함합니다. query String 으로 page 번호를 주세요")
+    @GetMapping("/{missionId}/missions/complete")
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "COMMON200",description = "OK, 성공"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "AUTH003", description = "access 토큰을 주세요!",content = @Content(schema = @Schema(implementation = ApiResponse.class))),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "AUTH004", description = "acess 토큰 만료",content = @Content(schema = @Schema(implementation = ApiResponse.class))),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "AUTH006", description = "acess 토큰 모양이 이상함",content = @Content(schema = @Schema(implementation = ApiResponse.class))),
+    })
+    @Parameters({
+            @Parameter(name = "memberId", description = "사용자의 아이디, query String 입니다!"),
+            @Parameter(name = "page", description = "페이지 번호, 1번부터 입력해주세요."),
+    })
+    public ApiResponse<MemberMissionResponseDTO.MissionPreviewListDTO> missionComplete(@ExistMission @PathVariable(name = "missionId") Long missionId,
+                                                                              @ExistMember @RequestParam(name = "memberId") Long memberId,
+                                                                              @CheckPage @RequestParam(name = "page") Integer page) {
         Mission mission = memberCommandService.ChangeMission(missionId, memberId);
-        return ApiResponse.onSuccess(MissionConverter.toCompleteMission(mission));
+        Page<Mission> missionList = memberQueryService.getMissionList(memberId, page-1, 2);
+        return ApiResponse.onSuccess(MemberMissionConverter.missionPreviewListDTO(missionList));
     }
 }
