@@ -2,7 +2,7 @@ spring:
   datasource:
     url: jdbc:mysql://localhost:3306/umc_mission
     username: root
-    password:
+    password: rootdb2457
     driver-class-name: com.mysql.cj.jdbc.Driver
   sql:
     init:
