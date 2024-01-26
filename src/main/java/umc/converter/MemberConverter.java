@@ -23,7 +23,7 @@ public class MemberConverter {
 
     public static Member toMember(MemberRequestDTO.JoinDto request){
 
-        Gender gender = null;
+        Gender gender = Gender.NONE;
 
         switch (request.getGender()){
             case 1:
