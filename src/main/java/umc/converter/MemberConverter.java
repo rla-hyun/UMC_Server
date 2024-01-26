@@ -25,17 +25,6 @@ public class MemberConverter {
 
         Gender gender = Gender.NONE;
 
-        switch (request.getGender()){
-            case 1:
-                gender = Gender.MALE;
-                break;
-            case 2:
-                gender = Gender.FEMALE;
-                break;
-            case 3:
-                gender = Gender.NONE;
-                break;
-        }
 
         return Member.builder()
                 .address(request.getAddress())
